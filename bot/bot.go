@@ -3,6 +3,7 @@ package bot
 import (
 	"botimgs/config"
 	"botimgs/database"
+	"database/sql"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	log "github.com/sirupsen/logrus"
@@ -13,7 +14,7 @@ import (
 
 var BotId string
 var goBot *discordgo.Session
-var DB, _ = database.Init()
+var DB, e = database.Init()
 
 const PREFIX string = "!"
 
@@ -74,7 +75,8 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 					}
 					_, _ = s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+"님 거래소 역할이 삭제되었습니다.")
 				}
-				DB.QueryRow("insert into userInfo (userName, )")
+				Init(s, m)
+
 			}
 		}
 		defer multipleOutputs(m)
@@ -104,4 +106,20 @@ func multipleOutputs(m *discordgo.MessageCreate) {
 	multiWriter := io.MultiWriter(logFile, os.Stdout)
 	log.SetOutput(multiWriter)
 	log.Println(m.Author.Mention() + ": " + m.Content)
+}
+
+func Init(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Create the database handle, confirm driver is present
+	sql.Drivers()
+
+	db, e := sql.Open("mariaDB", "rabbit:@%")
+
+	if e != nil {
+		defer db.Close()
+	}
+
+	var version string
+	db.QueryRow("SELECT VERSION()").Scan(&version)
+	fmt.Println("Connected to:", version)
+
 }
