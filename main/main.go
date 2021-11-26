@@ -8,7 +8,6 @@ import (
 
 // Variables used for command line parameters
 
-const Token string = "OTEzNjAzMTMzMDg5OTE5MDM2.YaA5OA._U9e5YChwPt9QYNXVXdY7eJcRWI"
 var BotId string
 
 func main() {
@@ -20,6 +19,6 @@ func main() {
 	}
 
 	bot.Start()
-	<- make(chan struct{})
+	<-make(chan struct{})
 	return
 }
